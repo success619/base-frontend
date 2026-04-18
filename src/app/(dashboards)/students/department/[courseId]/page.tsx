@@ -43,7 +43,7 @@ export default function CourseChatRoom() {
   const router = useRouter();
   
   // Explicitly typing the useUser hook return
-  const { user } = useUser() as { user: User | null };
+  const { user } = useUser();
   
   // Ensuring course-code (or courseId) is handled safely
   const courseCode = (params["course-code"] as string) || "Course";

@@ -119,7 +119,7 @@ export default function InstructorHubPage() {
               const Icon = getIcon(course.code);
               return (
                 <motion.div
-                  key={course.id}
+                  key={course.course_id}
                   layout
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -161,7 +161,7 @@ export default function InstructorHubPage() {
 
                     {/* Navigation restricted only to this button area */}
                     <button 
-                      onClick={() => router.push(`/instructors/summary/${course.id}`)}
+                      onClick={() => router.push(`/instructors/summary/${course.course_id}`)}
                       className="w-full flex items-center justify-between pt-4 border-t border-gray-800/50 group/btn"
                     >
                       <div className="flex items-center gap-2">

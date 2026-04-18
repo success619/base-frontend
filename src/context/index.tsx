@@ -1,18 +1,42 @@
 "use client";
 import { REST_API } from "@/constants";
-import { createContext, useEffect, useState, useMemo } from "react";
+import { createContext, useEffect, useState, useMemo, ReactNode, Dispatch, SetStateAction } from "react";
 import { AppLoading } from "@/components";
 import { socket } from "@/lib/socket";
+import { User } from "@/types";
 
-// Exporting all contexts
-export const SocketContext = createContext(null);
-export const UserContext = createContext([{}, () => {}]);
-export const UserTypeContext = createContext([null, () => {}]);
-export const LoggedInContext = createContext([false, () => {}]);
-export const AppLoadingContext = createContext([true, () => {}]);
+// --- Define Types for Contexts ---
+type ContextState<T> = [T, Dispatch<SetStateAction<T>>];
 
-export default function AppContext({ children }) {
-  const [user, setUser] = useState({});
+interface SocketContextType {
+  socket: typeof socket;
+  isConnected: boolean;
+}
+
+// ---  Initialize Contexts with correct types ---
+export const SocketContext = createContext<SocketContextType | null>(null);
+
+// Use Type Assertions to satisfy TypeScript's strict checking
+export const UserContext = createContext<ContextState<User>>([{} as User, () => {}]);
+export const UserTypeContext = createContext<ContextState<string>>(["", () => {}]);
+export const LoggedInContext = createContext<ContextState<boolean>>([false, () => {}]);
+export const AppLoadingContext = createContext<ContextState<boolean>>([true, () => {}]);
+
+export default function AppContext({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User>({
+    user_id: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    sex: "",
+    country: "",
+    school: "",
+    department: "",
+    phoneNumber: "",
+    role: "student",
+    avatar: ""
+  });
+  
   const [userType, setUserType] = useState("");
   const [appLoading, setAppLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
@@ -21,19 +45,21 @@ export default function AppContext({ children }) {
   useEffect(() => {
     const authenticateUser = async () => {
       try {
-        const response = await fetch(`${REST_API}/auth_session/76543b590e84a2512f45c9247413009d`, {
-          method: "get",
-          headers: { "content-Type": "application/json" },
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${REST_API}/auth_session/76543b590e84a2512f45c9247413009d`,
+          {
+            method: "get",
+            headers: { "content-Type": "application/json" },
+            credentials: "include",
+          },
+        );
         const res = await response.json();
 
         if (res?.user_id) {
           setUser(res);
           setUserType(res.role);
           setLoggedIn(true);
-          
-          // Only connect if not already connected
+
           if (!socket.connected) socket.connect();
         }
       } catch (error) {
@@ -43,9 +69,8 @@ export default function AppContext({ children }) {
       }
     };
 
-    authenticateUser()
+    authenticateUser();
 
-    // Socket status listeners
     const onConnect = () => setIsConnected(true);
     const onDisconnect = () => setIsConnected(false);
 
@@ -55,22 +80,18 @@ export default function AppContext({ children }) {
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
-      // We don't necessarily disconnect here to keep the socket alive 
-      // during route changes, unless the whole AppContext unmounts.
     };
   }, []);
 
-  // Sync user with Socket server once both are ready
   useEffect(() => {
     if (isConnected && user?.user_id) {
-      socket.emit("AddUserToActive", { 
-          userId: user.user_id, 
-          role: user.role // or userType
+      socket.emit("AddUserToActive", {
+        userId: user.user_id,
+        role: user.role,
       });
     }
   }, [isConnected, user]);
 
-  // useMemo prevents the entire app from re-rendering on every socket heartbeat
   const socketValue = useMemo(() => ({ socket, isConnected }), [isConnected]);
 
   return (

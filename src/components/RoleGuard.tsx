@@ -25,7 +25,9 @@ export default function RoleGuard({ children, allowedRole }: RoleGuardProps) {
     if (appLoading) return;
 
     // Handle userType being a function or a string to fix previous TS errors
-    const currentRole = typeof userType === "function" ? userType() : userType;
+    const currentRole =
+      // typeof userType === "function" ? userType() :
+      userType;
 
     if (!loggedIn) {
       router.replace("/signin");

@@ -21,12 +21,12 @@ export interface LoginPayload {
 
 export interface User {
   user_id: string;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
-  password: string;
   sex: string;
   country: string;
+  avatar: string;
   school: string;
   department: string;
   phoneNumber: string | number;
@@ -42,17 +42,18 @@ export interface AuthResponse {
 }
 
 export interface AuthSignInResponse {
-  user_id: string | number;
+  user_id: string;
   first_name: string;
   last_name: string;
   sex: string;
   email: string;
-  phone_number: string | number;
-  role: string;
+  phoneNumber: string;
+  role: "student" | "instructor" | "admin" |"worker";
   country: string;
   date_created: string | Date;
   department: string;
   school: string;
+  avatar: string;
   err: string;
 }
 

@@ -1,5 +1,5 @@
 export const REST_API = process.env.NODE_ENV === 'production'
-  ? "https://base-api-inanst.vercel.app/api"
+  ? "https://base-api-universal.vercel.app/api"
   : "http://localhost:4000/api";
 
 export const countries = [
