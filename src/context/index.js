@@ -13,7 +13,7 @@ export const AppLoadingContext = createContext([true, () => {}]);
 
 export default function AppContext({ children }) {
   const [user, setUser] = useState({});
-  const [userType, setUserType] = useState();
+  const [userType, setUserType] = useState("");
   const [appLoading, setAppLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -43,7 +43,7 @@ export default function AppContext({ children }) {
       }
     };
 
-    authenticateUser();
+    authenticateUser()
 
     // Socket status listeners
     const onConnect = () => setIsConnected(true);
